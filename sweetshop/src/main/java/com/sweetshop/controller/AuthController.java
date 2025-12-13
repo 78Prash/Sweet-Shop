@@ -1,29 +1,43 @@
 package com.sweetshop.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.sweetshop.model.User;
+import com.sweetshop.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import com.sweetshop.dto.AuthRequest;
-import com.sweetshop.dto.AuthResponse;
-import com.sweetshop.service.AuthService;
-
-@RestController
-@RequestMapping("/api/auth")
+@Controller
 public class AuthController {
-	private final AuthService authService;
-	public AuthController(AuthService authService) {this.authService = authService;}
-	
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody AuthRequest req){
-		authService.register(req);
-		return ResponseEntity.ok().build();
-	}
-	
-	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req){
-		return ResponseEntity.ok(authService.login(req));
-	}
+
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthController(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // show register page
+    @GetMapping("/register")
+    public String registerPage() {
+        return "register"; // register.jsp
+    }
+
+    // save user in DB
+    @PostMapping("/register")
+    public String saveUser(
+            @RequestParam String username,
+            @RequestParam String password) {
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password)); // 🔐 encrypt
+        user.setRole("ROLE_USER");
+
+        userRepository.save(user); // 🔥 INSERT INTO DB
+
+        return "redirect:/login";
+    }
 }

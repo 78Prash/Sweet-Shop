@@ -22,7 +22,7 @@ public class User {
 	private String password;   //stored hashed
 	
 	@Column(nullable = false)
-	private String role = "USER";  //user or admin
+	private String role ;  //user or admin
 
 	public Long getId() {
 		return id;

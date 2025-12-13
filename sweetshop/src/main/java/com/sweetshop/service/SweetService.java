@@ -15,7 +15,19 @@ public class SweetService {
 	private final SweetRepository repo;
 	public SweetService(SweetRepository repo ) {this.repo = repo;}
 	
-	public Sweet add(Sweet s) {return repo.save(s);}
+	
+	public Sweet add(Sweet sweet) {
+
+	    if (sweet.getQuantity() == null) {
+	        sweet.setQuantity(0);
+	    }
+
+	    if (sweet.getPrice() == null) {
+	        throw new IllegalArgumentException("Price is required");
+	    }
+
+	    return repo.save(sweet);
+	}
 	public List<Sweet> list() {return repo.findAll();}
 	public Sweet update(Long id, Sweet s) {
 		Sweet existing = repo.findById(id).orElseThrow();
@@ -49,6 +61,11 @@ public class SweetService {
 		s.setQuantity((s.getQuantity()==null ? 0:s.getQuantity())+amount);
 		return repo.save(s);
 	}
+	public Sweet getById(Long id) {
+	    return repo.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
+	}
+	
 	
 	}
 

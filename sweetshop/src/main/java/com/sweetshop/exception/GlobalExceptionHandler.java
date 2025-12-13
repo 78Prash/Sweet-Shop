@@ -1,14 +1,15 @@
 package com.sweetshop.exception;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
-	
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<?> handleRuntime(RuntimeException ex){
-		return ResponseEntity.badRequest().body(ex.getMessage());
-	}
+
+    @ExceptionHandler(Exception.class)
+    public String handle(Exception ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "error";
+    }
 }

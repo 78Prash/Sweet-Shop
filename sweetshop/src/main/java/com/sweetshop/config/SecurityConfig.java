@@ -1,34 +1,63 @@
 package com.sweetshop.config;
 
-import com.sweetshop.security.JwtFilter;
-import com.sweetshop.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity
+@EnableWebSecurity
 public class SecurityConfig {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    private final JwtUtil jwtUtil;
-    public SecurityConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+	    http
+	        .csrf(csrf -> csrf.disable())
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        JwtFilter jwtFilter = new JwtFilter(jwtUtil);
+	        .authorizeHttpRequests(auth -> auth
+	        	    .requestMatchers(
+	        	    		"/register",
+	        	        "/login",
+	        	        "/error",
+	        	        "/WEB-INF/**",   
+	        	        "/css/**",
+	        	        "/js/**",
+	        	        "/images/**"
+	        	    ).permitAll()
 
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	        	    .requestMatchers("/admin/**").hasRole("ADMIN")
+	        	    .requestMatchers("/sweets", "/sweets/**").hasAnyRole("ADMIN", "USER")
 
-        return http.build();
-    }
+
+	        	    .anyRequest().authenticated()
+	        	)
+
+	        .formLogin(form -> form
+	            .loginPage("/login")
+	            .loginProcessingUrl("/login")
+	            .defaultSuccessUrl("/sweets", true)   // 🔥 FIX
+	            .failureUrl("/login?error=true")
+	            .permitAll()
+	        )
+
+	        .logout(logout -> logout
+	            .logoutUrl("/logout")
+	            .logoutSuccessUrl("/login?logout=true")
+	            .permitAll()
+	        );
+
+	    return http.build();
+	}
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+	    return new BCryptPasswordEncoder();
+	}
+
 }
+
+
+

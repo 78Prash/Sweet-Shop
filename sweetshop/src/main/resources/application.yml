@@ -1,17 +1,18 @@
 spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
   datasource:
     url: jdbc:postgresql://localhost:5432/sweetshop
     username: postgres
     password: pg123
-    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create   # creates tables automatically
+      ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
 server:
   port: 8080
