@@ -65,6 +65,10 @@ public class SweetService {
 	    return repo.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
 	}
+	public List<Sweet> search(String keyword) {
+	    return repo.findByNameContainingIgnoreCase(keyword);
+	}
+
 	
 	
 	}
