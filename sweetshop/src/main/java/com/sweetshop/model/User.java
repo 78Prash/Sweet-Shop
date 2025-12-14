@@ -19,10 +19,10 @@ public class User {
 	private String username;
 	
 	@Column(nullable = false)
-	private String password;   //stored hashed
+	private String password;   
 	
 	@Column(nullable = false)
-	private String role ;  //user or admin
+	private String role ;  
 
 	public Long getId() {
 		return id;

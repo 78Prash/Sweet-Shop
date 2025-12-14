@@ -19,13 +19,11 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // show register page
     @GetMapping("/register")
     public String registerPage() {
-        return "register"; // register.jsp
+        return "register"; 
     }
 
-    // save user in DB
     @PostMapping("/register")
     public String saveUser(
             @RequestParam String username,
@@ -33,10 +31,10 @@ public class AuthController {
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password)); // 🔐 encrypt
+        user.setPassword(passwordEncoder.encode(password)); 
         user.setRole("ROLE_USER");
 
-        userRepository.save(user); // 🔥 INSERT INTO DB
+        userRepository.save(user); 
 
         return "redirect:/login";
     }
